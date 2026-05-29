@@ -145,6 +145,37 @@ const Discover = () => {
         score: getMatchScore(u),
       }));
 
+    // SEARCH
+    if (search) {
+      matched = matched.filter((u) => {
+        const skillsStr = Array.isArray(u.skills)
+          ? u.skills.join(" ").toLowerCase()
+          : (u.skills || "").toLowerCase();
+        return (
+          u.name?.toLowerCase().includes(search.toLowerCase()) ||
+          skillsStr.includes(search.toLowerCase())
+        );
+      });
+    }
+
+    // FILTERS
+    if (selectedFilter !== "All") {
+      matched = matched.filter((u) => {
+        const skillsList = Array.isArray(u.skills)
+          ? u.skills.map((s: string) => s.toLowerCase())
+          : (u.skills?.split(",") || []).map((s: string) => s.trim().toLowerCase());
+        return skillsList.some((skill: string) =>
+          skill.includes(selectedFilter.toLowerCase())
+        );
+      });
+    }
+
+    // DEFAULT BUBBLE
+    // If no search and no filter are active, only show recommended peers (score > 0)
+    if (!search && selectedFilter === "All") {
+      matched = matched.filter((u) => u.score > 0);
+    }
+
     matched.sort((a, b) => b.score - a.score);
 
     setFilteredUsers(matched);

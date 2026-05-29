@@ -51,12 +51,16 @@ const ResourceHub = React.lazy(() => import("@/pages/ResourceHub"));
 
 const queryClient = new QueryClient();
 
-const WithNav = ({ children }: { children: React.ReactNode }) => (
-  <>
-    <Navbar />
-    {children}
-  </>
-);
+const WithNav = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  return (
+    <>
+      <Navbar />
+      {user && <StreakBadge />}
+      {children}
+    </>
+  );
+};
 
 function AppContent() {
   const { user } = useAuth();
@@ -92,19 +96,28 @@ function AppContent() {
   return (
     <>
       <div id="sparkle-container"></div>
-      <StreakBadge />
+
 
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route
             path="/"
-            element={user ? <Navigate to="/dashboard" replace /> : <Index />}
+            element={user ? <Navigate to="/dashboard" replace /> : <WithNav><Index /></WithNav>}
           />
 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/ai" element={<AIPage />} />
+          <Route
+            path="/ai"
+            element={
+              <ProtectedRoute>
+                <WithNav>
+                  <AIPage />
+                </WithNav>
+              </ProtectedRoute>
+            }
+          />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/become-mentor" element={<BecomeMentor />} />
@@ -292,7 +305,12 @@ function AppContent() {
         </Routes>
       </Suspense>
 
-      <Chatbot />
+      {user && (
+        <>
+          <Chatbot />
+          <FloatingAI />
+        </>
+      )}
     </>
   );
 }
@@ -311,8 +329,6 @@ function App() {
                 <AppContent />
               </RoleProvider>
             </AuthProvider>
-
-            <FloatingAI />
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
