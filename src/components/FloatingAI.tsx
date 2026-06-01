@@ -41,14 +41,9 @@ const FloatingAI = () => {
     setLoading(true);
 
     try {
-      // Route the request through the backend so the API key stays server-side.
-      const response = await fetch(`${API_BASE_URL}/api/chat`, {
-      // The /api/chat endpoint is protected by requireAuth middleware.
-      // Without a Bearer token every request is rejected with 401 Unauthorized.
-      // Retrieve the session token from localStorage using the same pattern
-      // used by SuggestedPartners.tsx and other components in this project.
       const token = localStorage.getItem("token");
-      const response = await fetch("/api/chat", {
+
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,9 +56,32 @@ const FloatingAI = () => {
         }),
       });
 
+      if (response.status === 401) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Please log in to use the AI assistant.",
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `Server error (${response.status}). Please try again later.`,
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
 
-      // ERROR HANDLING
       if (data.error) {
         setMessages((prev) => [
           ...prev,
@@ -72,15 +90,12 @@ const FloatingAI = () => {
             content: data.error,
           },
         ]);
-
         setLoading(false);
-
         return;
       }
 
-      const aiReply = data?.reply || "AI could not respond 😔";
+      const aiReply = data?.reply || "AI could not respond";
 
-      // AI MESSAGE
       setMessages((prev) => [
         ...prev,
         {
@@ -89,14 +104,14 @@ const FloatingAI = () => {
         },
       ]);
     } catch (error) {
-      console.log(error);
+      console.error("FloatingAI fetch error:", error);
 
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
           content:
-            "AI failed 😔",
+            "Network error. Please check your connection and try again.",
         },
       ]);
     }
