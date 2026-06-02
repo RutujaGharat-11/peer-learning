@@ -300,34 +300,4 @@ export default function Room() {
         </div>
        </div>
       );
-      }
-  {/* Whiteboard */}
-  <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg">
-    <Suspense fallback={<div className="h-full w-full animate-pulse bg-slate-800" />}>
-      <Whiteboard roomId={id!} />
-    </Suspense>
-  </div>
-
-  {/* Participants */}
-  <div className="w-64 bg-slate-900 border border-slate-800 rounded-xl flex-col hidden lg:flex overflow-hidden shadow-lg">
-    <div className="p-4 border-b border-slate-800 bg-slate-900/80">
-      <h2 className="font-semibold text-slate-200">Online ({participants.length})</h2>
-    </div>
-
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {participants.map((p, idx) => (
-        <div key={idx} className="flex items-center gap-3">
-          <div className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-          <span className="text-slate-300 text-sm font-medium truncate">
-            {p.name || 'Anonymous Student'}
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-
-</div>
-      </div>
-    </div>
-  );
 }
