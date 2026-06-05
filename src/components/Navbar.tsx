@@ -206,7 +206,7 @@ const Navbar = () => {
           const className = `flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300
             ${
               active
-                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-black shadow-lg shadow-cyan-500/20"
                 : "text-gray-300 hover:bg-white/10 hover:text-white"
             }`;
 
