@@ -32,8 +32,10 @@ export const useAwardXP = () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
     },
-    onError: () => {
-      // Errors are handled by the calling component via the mutation's error state
+    onError: (error) => {
+      if (import.meta.env.DEV) {
+        console.error("Failed to award XP:", error);
+      }
     }
   });
 };
